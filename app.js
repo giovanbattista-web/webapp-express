@@ -3,10 +3,6 @@ const app = express();
 const port = 3000;
 filmRouter = require('./routers/film');
 
-
-app.use(express.static('public'));
-app.use(express.json());
-
 app.get("/", (req, res) => {
     console.log("Server dei miei film");
     res.send("Benvenuto nel mio cinema")
