@@ -1,20 +1,40 @@
 const connection = require('../data/db');
 
 const index = (req, res) => {
-    const sql = "SELECT * FROM movies";
-    connection.query(sql, (err, results) => {
+    connection.query("SELECT * FROM movies", (err, movieResult) => {
         if (err) {
-            return res.status(500).json({ error: "Database query failed" });
+            return res.status(500).json({ error: "Database query failed " + err });
         }
-
-        // console.log(results);
-        res.json(results);
-
+        res.json(movieResult);
     });
 };
 
 const show = (req, res) => {
-    res.send("Film con id " + req.params.id);
+    const { id } = req.params;
+
+    const movieSql = "SELECT * FROM movies WHERE id = ?";
+
+    const reviewsSql =
+        `SELECT *
+    FROM reviews
+    WHERE movie_id = ?;`
+
+    connection.query(movieSql, [id], (err, movieResult) => {
+        if (err) return res.status(500).json({ error: "Database query failed " + err });
+
+        if (movieResult.length === 0 || movieResult[0].id === null)
+            return res.status(404).json({ error: 'Not found' });
+
+        const movie = movieResult[0];
+
+        connection.query(reviewsSql, [id], (err, reviewsResult) => {
+            if (err) return res.status(500).json({ error: "Database query failed " + err });
+
+            movie.reviews = reviewsResult;
+
+            res.json(movie);
+        })
+    });
 };
 
 module.exports = {
