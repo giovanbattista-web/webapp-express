@@ -5,6 +5,8 @@ const cors = require('cors');
 
 const port = process.env.SERVER_PORT || 3000;
 
+app.use(cors({ origin: process.env.FE_APP }))
+
 filmRouter = require('./routers/film');
 
 app.get("/", (req, res) => {
