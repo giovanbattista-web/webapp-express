@@ -1,5 +1,10 @@
 const express = require('express');
+
 const app = express();
+
+app.use(express.static('public'));
+
+app.use(express.json());
 
 const cors = require('cors');
 
@@ -10,7 +15,7 @@ app.use(cors({ origin: process.env.FE_APP }))
 filmRouter = require('./routers/film');
 
 app.get("/", (req, res) => {
-    console.log("Server dei miei film");
+    // console.log("Server dei miei film");
     res.send("Benvenuto nel mio cinema")
 });
 
