@@ -2,10 +2,16 @@ const connection = require('../data/db');
 
 const index = (req, res) => {
     connection.query("SELECT * FROM movies", (err, movieResult) => {
-        if (err) {
-            return res.status(500).json({ error: "Database query failed " + err });
-        }
-        res.json(movieResult);
+        if (err) return res.status(500).json({ error: "Database query failed " + err });
+        const movies = movieResult.map((movie) => {
+
+            const obj = {
+                ...movie,
+                image: req.imagePath + movie.image
+            }
+            return obj
+        })
+        res.json(movies);
     });
 };
 
@@ -32,10 +38,10 @@ const show = (req, res) => {
 
             movie.reviews = reviewsResult;
 
-            res.json(movie);
+            res.json({ ...movie, image: req.imagePath + movie.image });
         })
-    });
-};
+    })
+}
 
 module.exports = {
     index,

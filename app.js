@@ -2,9 +2,13 @@ const express = require('express');
 
 const app = express();
 
+const imagePathMiddleware = require('./imagePath');
+
 app.use(express.static('public'));
 
 app.use(express.json());
+
+app.use(imagePathMiddleware);
 
 const cors = require('cors');
 
@@ -12,7 +16,7 @@ const port = process.env.SERVER_PORT || 3000;
 
 app.use(cors({ origin: process.env.FE_APP }))
 
-filmRouter = require('./routers/film');
+const filmRouter = require('./routers/film');
 
 app.get("/", (req, res) => {
     // console.log("Server dei miei film");
