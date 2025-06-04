@@ -4,9 +4,11 @@ const app = express();
 
 const imagePathMiddleware = require('./imagePath');
 
-app.use(imagePathMiddleware);
+app.use(express.static('public'));
 
-const router = require('./routers/filmRouter');
+app.use(express.json());
+
+app.use(imagePathMiddleware);
 
 const cors = require('cors');
 
@@ -14,15 +16,14 @@ const port = process.env.SERVER_PORT || 3000;
 
 app.use(cors({ origin: process.env.FE_APP }));
 
-app.use(express.static('public'));
-
-app.use(express.json());
+const filmRouter = require('./routers/filmRouter');
 
 app.get("/", (req, res) => {
+    // console.log("Server dei miei film");
     res.send("Benvenuto nel mio cinema")
 });
 
-app.use("/films", router);
+app.use("/films", filmRouter);
 
 app.listen(port, () => {
     console.log(`Server in ascolto sulla porta ${port}`);

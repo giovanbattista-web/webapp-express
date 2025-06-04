@@ -1,15 +1,15 @@
 const connection = require('../data/db');
 
 const index = (req, res) => {
-    connection.query("SELECT * FROM movies", (err, movieResult) => {
+    connection.query("SELECT * FROM movies", (err, moviesResult) => {
         if (err) return res.status(500).json({ error: "Database query failed " + err });
-        const movies = movieResult.map((movie) => {
 
+        const movies = moviesResult.map((movie) => {
             const obj = {
                 ...movie,
                 image: req.imagePath + movie.image
             }
-            return obj
+            return obj;
         })
         res.json(movies);
     });
@@ -22,8 +22,8 @@ const show = (req, res) => {
 
     const reviewsSql =
         `SELECT *
-    FROM reviews
-    WHERE movie_id = ?;`
+        FROM reviews
+        WHERE movie_id = ?`
 
     connection.query(movieSql, [id], (err, movieResult) => {
         if (err) return res.status(500).json({ error: "Database query failed " + err });
