@@ -19,12 +19,11 @@ app.use(cors({ origin: process.env.FE_APP }));
 const filmRouter = require('./routers/filmRouter');
 
 app.get("/", (req, res) => {
-    // console.log("Server dei miei film");
-    res.send("Benvenuto nel mio cinema")
+    res.send("Benvenuto nel mio cinema");
 });
 
 app.use("/films", filmRouter);
 
 app.listen(port, () => {
     console.log(`Server in ascolto sulla porta ${port}`);
-})
+});
