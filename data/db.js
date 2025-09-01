@@ -1,18 +1,22 @@
+// IMPORTO mysql2
 const mysql = require('mysql2');
 
+// CREO LA CONNESSIONE AL DB MA NON LA STO EFFETTUANDO 
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST || localhost,
+    host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
+    database: process.env.DB_NAME
 });
 
+// EFFETTUO LA CONNESSIONE
 connection.connect((err) => {
     if (err) {
-        console.log("Error to connect to MySql " + err);
-        return;
+        console.log("Database connection error" + err);
+    } else {
+        console.log("Connected to my mySql");
     }
-    console.log("Connected to my MySql");
 });
 
+// ESPORTO LA VARIABILE connection
 module.exports = connection;

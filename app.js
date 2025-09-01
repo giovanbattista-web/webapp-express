@@ -1,29 +1,41 @@
+// IMPORTO EXPRESS
 const express = require('express');
 
+// INIZIALIZZO LA VARIABILE app CON IL METODO EXPRESS()
 const app = express();
-
-const imagePathMiddleware = require('./imagePath');
-
-app.use(express.static('public'));
-
-app.use(express.json());
-
-app.use(imagePathMiddleware);
-
-const cors = require('cors');
 
 const port = process.env.SERVER_PORT || 3000;
 
-app.use(cors({ origin: process.env.FE_APP }));
+// IMPORTO IL ROUTER
+const moviesRouter = require('./routers/filmRouter.js');
 
-const filmRouter = require('./routers/filmRouter');
+// IMPORTO I CUSTOM MIDDLEWARE
+const errorsHandler = require('./middlewares/errorsHandler.js');
+const notFound = require('./middlewares/notFound.js');
 
+// USO IL MIDDLEWARE PER GLI ASSET STATICI
+app.use(express.static('public'));
+
+// USO IL MIDDLEWARE PER IL PARSINT DEL BODY DELLE RICHIESTE 
+app.use(express.json());
+
+// DEFINISCO UN ENTRY POINT
 app.get("/", (req, res) => {
-    res.send("Benvenuto nel mio cinema");
+    res.send("Welcome to my cinema");
 });
 
-app.use("/films", filmRouter);
+// UTILIZZO IL ROUTER ANDANDO A DEFINIRE IL GRUPPO DI ROTTE
+app.use("/api/films", moviesRouter);
 
+//UTILIZZO DEI MIDDLEWARES
+app.use(errorsHandler);
+app.use(notFound);
+
+const cors = require('cors');
+
+app.use(cors({ origin: process.env.FE_APP }));
+
+// SERVER IN ASCOLTO SULLA PORTA 3000
 app.listen(port, () => {
-    console.log(`Server in ascolto sulla porta ${port}`);
+    console.log(`Server listening on port ${port}`);
 });
