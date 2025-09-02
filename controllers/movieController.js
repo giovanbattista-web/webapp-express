@@ -8,7 +8,7 @@ const index = (req, res) => {
         const movies = response.map((movie) => {
             return {
                 ...movie,
-                image: req.imagePath + movie.image
+                image: req.imagePath + (req.imagePath.endsWith('/') ? '' : '/') + movie.image
             }
         })
         console.log(response, movies);
@@ -57,7 +57,10 @@ const show = (req, res) => {
             // VADO AD AGGIUNGERE LA MEDIA DELLE RECENSIONI PER IL SINGOLO LIBRO
             movie.average_vote = parseInt(movie.average_vote); // VADO A SOVRASCRIVERE IL VOTO CON UN INTERO
 
-            res.json({ ...movie, image: req.imagePath + movie.image });
+            res.json({
+                ...movie,
+                image: req.imagePath + (req.imagePath.endsWith('/') ? '' : '/') + movie.image
+            });
         })
     })
 }
