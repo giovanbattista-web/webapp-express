@@ -4,7 +4,15 @@ const connection = require('../data/db');
 const index = (req, res) => {
     connection.query("SELECT * FROM movies", (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed" + err });
-        res.json(response);
+
+        const movies = response.map((movie) => {
+            return {
+                ...movie,
+                image: req.imagePath + movie.image
+            }
+        })
+        console.log(response, movies);
+        res.json(movies);
     })
 }
 
@@ -49,7 +57,7 @@ const show = (req, res) => {
             // VADO AD AGGIUNGERE LA MEDIA DELLE RECENSIONI PER IL SINGOLO LIBRO
             movie.average_vote = parseInt(movie.average_vote); // VADO A SOVRASCRIVERE IL VOTO CON UN INTERO
 
-            res.json(movie);
+            res.json({ ...movie, image: req.imagePath + movie.image });
         })
     })
 }

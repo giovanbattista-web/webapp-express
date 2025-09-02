@@ -15,10 +15,13 @@ const movieRouter = require('./routers/movieRouter');
 // IMPORTO I CUSTOM MIDDLEWARE
 const errorsHandler = require('./middlewares/errorsHandler');
 const notFound = require('./middlewares/notFound');
+const imagePath = require('./middlewares/imagePath');
 
 // USO IL MIDDLEWARE PER IL CORS OVVERO UN OGGETTO CHE HA UNA COPPIA PROPRIETA' : VALORE 
 // E' EXPRESS CHE DEVE ACCETTARE LE RICHIESTE 
 app.use(cors({ origin: process.env.FE_APP }));
+
+app.use(imagePath);
 
 // USO IL MIDDLEWARE PER GLI ASSET STATICI
 app.use(express.static('public'));
