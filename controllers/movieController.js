@@ -1,3 +1,4 @@
+const { response } = require('express');
 const connection = require('../data/db');
 
 // METODO INDEX
@@ -65,7 +66,26 @@ const show = (req, res) => {
     })
 }
 
+const storeReview = (req, res) => {
+    // RECENSIONE LEGATA AD UN FILM QUINDI ABBIAMO BISOGNO DELL'id DEL FILM
+    const { id } = req.params;
+    // MI RECUPERO I DATI DEL BODY
+    const { name, vote, text } = req.body;
+    // PREPARO LA QUERY
+    const sql = " INSERT INTO reviews(movie_id,name,vote,text) VALUES(?,?,?,?)";
+    // ESEGUO LA QUERY
+    connection.query(sql, [id, name, vote, text], (err, response) => {
+        if (err) return res.status(500).json({ error: "Database query failed" });
+
+        res.status(201).json({ message: "Review added" });
+    });
+};
+
+
+
+
 module.exports = {
     index,
-    show
+    show,
+    storeReview
 };

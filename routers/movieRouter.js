@@ -10,5 +10,6 @@ const movieController = require('../controllers/movieController');
 // DEFINISCO LE ROTTE
 router.get('/', movieController.index);
 router.get('/:id', movieController.show);
+router.post('/:id/reviews',movieController.storeReview)
 
 module.exports = router;
