@@ -10,11 +10,11 @@ const cors = require('cors');
 const port = process.env.SERVER_PORT || 3000;
 
 // IMPORTO IL ROUTER
-const moviesRouter = require('./routers/filmRouter.js');
+const movieRouter = require('./routers/movieRouter');
 
 // IMPORTO I CUSTOM MIDDLEWARE
-const errorsHandler = require('./middlewares/errorsHandler.js');
-const notFound = require('./middlewares/notFound.js');
+const errorsHandler = require('./middlewares/errorsHandler');
+const notFound = require('./middlewares/notFound');
 
 // USO IL MIDDLEWARE PER IL CORS OVVERO UN OGGETTO CHE HA UNA COPPIA PROPRIETA' : VALORE 
 // E' EXPRESS CHE DEVE ACCETTARE LE RICHIESTE 
@@ -32,15 +32,11 @@ app.get("/", (req, res) => {
 });
 
 // UTILIZZO IL ROUTER ANDANDO A DEFINIRE IL GRUPPO DI ROTTE
-app.use("/api/films", moviesRouter);
+app.use("/api/films", movieRouter);
 
 //UTILIZZO DEI MIDDLEWARES
 app.use(errorsHandler);
 app.use(notFound);
-
-app.use(cors({
-    origin: process.env.FE_APP
-}));
 
 // SERVER IN ASCOLTO SULLA PORTA 3000
 app.listen(port, () => {

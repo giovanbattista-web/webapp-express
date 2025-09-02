@@ -5,11 +5,10 @@ const express = require('express');
 const router = express.Router();
 
 // IMPORTO IL FILMCONTROLLER
-const movieController = require('../controllers/filmController');
+const movieController = require('../controllers/movieController');
 
 // DEFINISCO LE ROTTE
 router.get('/', movieController.index);
-
 router.get('/:id', movieController.show);
 
 module.exports = router;

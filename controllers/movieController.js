@@ -1,22 +1,22 @@
-const connection = require('../data/db.js');
+const connection = require('../data/db');
 
 // METODO INDEX
 const index = (req, res) => {
-    connection.query("SELECT * FROM movies", (err, moviesResult) => {
+    connection.query("SELECT * FROM movies", (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed" + err });
-        res.json(moviesResult);
+        res.json(response);
     })
 }
 
 const show = (req, res) => {
     // RECUPERO L'id
-    const { id } = req.params
+    const id = req.params.id
 
     // QUERY PER IL RECUPERO DEL FILM AVENTE id RECUPERATO
     const movieSql = `
-    SELECT movies.*, AVG(reviews.vote) AS average_vote
+    SELECT movies.*, AVG(reviews.vote) AS vote
     FROM movies
-    JOIN reviews ON movies.id= reviews.movie_id 
+    JOIN reviews ON movies.id = reviews.movie_id
     WHERE movies.id=?
     GROUP BY  movies.id`;
 
@@ -28,16 +28,16 @@ const show = (req, res) => {
     `;
 
     // ESEGUO LA QUERY PER RECUPERARE IL FILM
-    connection.query(movieSql, [id], (err, movieResult) => {
+    connection.query(movieSql, [id], (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed: " + err });
 
-        if (movieResult.length === 0 || movieResult[0].id === null) {
-            return res.status(404).json({ error: 'Not found' }); // ERRORE INTERNO AL METODO DEL CONTROLLER,
+        if (response.length === 0 || response[0].id === null) {
+            return res.status(404).send({ error: 'Not found' }); // ERRORE INTERNO AL METODO DEL CONTROLLER,
             // AD ESEMPIO id = 6 DOVE ABBIAMO 5 ELEMENTI MENTRE L'ALTRO NOTFOUND E' RIFERITO ALLA ROTTA,
             // AD ESEMPIO SE DOVESSI SCRIVERE CIAOOO INVECE DI ROTTA CIAO
         }
 
-        const movie = movieResult[0]; // DATO CHE movieResult E' UN ARRAY
+        const movie = response[0]; // DATO CHE response E' UN ARRAY
 
         connection.query(reviewsSql, [id], (err, reviewsResult) => {
             if (err) return res.status(500).json({ error: "Database query failed " + err });
@@ -49,7 +49,7 @@ const show = (req, res) => {
             // VADO AD AGGIUNGERE LA MEDIA DELLE RECENSIONI PER IL SINGOLO LIBRO
             movie.average_vote = parseInt(movie.average_vote); // VADO A SOVRASCRIVERE IL VOTO CON UN INTERO
 
-            res.json(movieResult);
+            res.json(movie);
         })
     })
 }
