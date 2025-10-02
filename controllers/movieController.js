@@ -1,7 +1,5 @@
-const { response } = require('express');
 const connection = require('../data/db');
 
-// METODO INDEX
 const index = (req, res) => {
     connection.query("SELECT * FROM movies", (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed" + err });
@@ -18,10 +16,8 @@ const index = (req, res) => {
 }
 
 const show = (req, res) => {
-    // RECUPERO L'id
     const id = req.params.id
 
-    // QUERY PER IL RECUPERO DEL FILM AVENTE id RECUPERATO
     const movieSql = `
     SELECT movies.*, AVG(reviews.vote) AS vote
     FROM movies
@@ -29,34 +25,27 @@ const show = (req, res) => {
     WHERE movies.id=?
     GROUP BY  movies.id`;
 
-    // QUERY PER IL RECUPERO DELLE RECENSIONI DEL FILM RECUPERATO, ABBIAMO UNA ONE TO MANY
     const reviewsSql = `
     SELECT * 
     FROM reviews
     WHERE movie_id = ? 
     `;
 
-    // ESEGUO LA QUERY PER RECUPERARE IL FILM
     connection.query(movieSql, [id], (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed: " + err });
 
         if (response.length === 0 || response[0].id === null) {
-            return res.status(404).send({ error: 'Not found' }); // ERRORE INTERNO AL METODO DEL CONTROLLER,
-            // AD ESEMPIO id = 6 DOVE ABBIAMO 5 ELEMENTI MENTRE L'ALTRO NOTFOUND E' RIFERITO ALLA ROTTA,
-            // AD ESEMPIO SE DOVESSI SCRIVERE CIAOOO INVECE DI ROTTA CIAO
+            return res.status(404).send({ error: 'Not found' });
         }
 
-        const movie = response[0]; // DATO CHE response E' UN ARRAY
+        const movie = response[0];
 
         connection.query(reviewsSql, [id], (err, reviewsResult) => {
             if (err) return res.status(500).json({ error: "Database query failed " + err });
 
-            // AGGIUNGO LE RECENSIONI AL FILM
-            movie.reviews = reviewsResult; // ALLA PROPRIETA' reviews ANDIAMO AD ASSEGNARE LE RECENSIONI CHE ABBIAMO
-            // TROVATO
+            movie.reviews = reviewsResult;
 
-            // VADO AD AGGIUNGERE LA MEDIA DELLE RECENSIONI PER IL SINGOLO LIBRO
-            movie.average_vote = parseInt(movie.average_vote); // VADO A SOVRASCRIVERE IL VOTO CON UN INTERO
+            movie.average_vote = parseInt(movie.average_vote);
 
             res.json({
                 ...movie,
@@ -67,22 +56,18 @@ const show = (req, res) => {
 }
 
 const storeReview = (req, res) => {
-    // RECENSIONE LEGATA AD UN FILM QUINDI ABBIAMO BISOGNO DELL'id DEL FILM
     const { id } = req.params;
-    // MI RECUPERO I DATI DEL BODY
+
     const { name, vote, text } = req.body;
-    // PREPARO LA QUERY
+
     const sql = " INSERT INTO reviews(movie_id,name,vote,text) VALUES(?,?,?,?)";
-    // ESEGUO LA QUERY
+
     connection.query(sql, [id, name, vote, text], (err, response) => {
         if (err) return res.status(500).json({ error: "Database query failed" });
 
         res.status(201).json({ message: "Review added" });
     });
 };
-
-
-
 
 module.exports = {
     index,
